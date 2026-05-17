@@ -19,7 +19,7 @@ const supabase = createClient(
 );
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-app.use(cors({ origin: "*" }));
+app.use(cors());
 app.use(express.json());
 
 // ─── STAGES (local — won't change) ──────────────────────────
