@@ -123,19 +123,28 @@ app.get("/stages", (_, res) => res.json(STAGES));
 
 // ── GET /orders  (admin: all | client: own) ──────────────────
 app.get("/orders", requireAuth, async (req, res) => {
+  let isAdmin = req.user?.role === "admin";
+
+if (!isAdmin && req.user?.id) {
   const { data: userRow } = await supabase
-    .from("users").select("role").eq("id", req.user.id).single();
+    .from("users")
+    .select("role")
+    .eq("id", req.user.id)
+    .maybeSingle();
 
-  let query = supabase.from("orders").select(`
-    *,
-    stage_history ( stage_id, completed_at ),
-    delays        ( stage_id, days, reason ),
-    notifications ( message, created_at, sent_email )
-  `).order("created_at", { ascending: false });
+  isAdmin = userRow?.role === "admin";
+}
 
-  if (userRow?.role !== "admin") {
-    query = query.eq("client_email", req.user.email);
-  }
+let query = supabase.from("orders").select(`
+  *,
+  stage_history ( stage_id, completed_at ),
+  delays       ( stage_id, days, reason ),
+  notifications ( message, created_at, sent_email )
+`).order("created_at", { ascending: false });
+
+if (!isAdmin) {
+  query = query.eq("client_email", req.user.email);
+}
 
   const { data, error } = await query;
   if (error) return res.status(500).json({ error: error.message });
