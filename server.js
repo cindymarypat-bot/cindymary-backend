@@ -13,9 +13,13 @@ const app  = express();
 const PORT = process.env.PORT || 4000;
 
 // ─── CLIENTS ────────────────────────────────────────────────
+const SUPABASE_URL = (process.env.SUPABASE_URL || "")
+  .replace(/\/rest\/v1\/?$/, "")
+  .replace(/\/+$/, "");
+
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY   // service key — never expose to frontend
+  SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY
 );
 const resend = new Resend(process.env.RESEND_API_KEY);
 
