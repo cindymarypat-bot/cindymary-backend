@@ -188,7 +188,20 @@ app.post("/auth/login", async (req, res) => {
 
 // ── POST /orders  (admin only) ───────────────────────────────
 app.post("/orders", requireAdmin, async (req, res) => {
-  const { client_name, client_email, client_phone, garment, location, notes, assigned_to } = req.body;
+  const {
+  client_name,
+  client_email,
+  client_phone,
+  garment,
+  location,
+  notes,
+  assigned_to,
+  start_date,
+  agreed_delivery_date,
+  stage_days,
+  measurements,
+  style_reference_notes
+} = req.body;
 
   if (!client_name || !client_email || !garment || !location) {
     return res.status(400).json({ error: "Missing required fields" });
@@ -203,6 +216,11 @@ app.post("/orders", requireAdmin, async (req, res) => {
     garment, location, notes,
     assigned_to: assigned_to || "Unassigned",
     current_stage: 1,
+    start_date,
+agreed_delivery_date,
+stage_days,
+measurements,
+style_reference_notes,
   }).select().single();
 
   if (error) return res.status(500).json({ error: error.message });
