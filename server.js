@@ -152,6 +152,24 @@ app.get("/orders/:id", requireAuth, async (req, res) => {
   res.json(data);
 });
 
+
+app.post("/auth/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  if (email === "admin@cindymary.com" && password === "password") {
+    return res.json({
+      token: "admin-test-token",
+      user: {
+        email,
+        role: "admin",
+        name: "Admin"
+      }
+    });
+  }
+
+  return res.status(401).json({ error: "Invalid login" });
+});
+
 // ── POST /orders  (admin only) ───────────────────────────────
 app.post("/orders", requireAdmin, async (req, res) => {
   const { client_name, client_email, client_phone, garment, location, notes, assigned_to } = req.body;
@@ -190,15 +208,6 @@ app.post("/orders", requireAdmin, async (req, res) => {
   res.status(201).json(data);
 });
 
-app.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-
-  if (email === "admin@cindymary.com" && password === "password") {
-    return res.json({ success: true, message: "Login successful" });
-  }
-
-  return res.status(401).json({ error: "Invalid login" });
-});
 
 // ── PATCH /orders/:id/advance  (admin only) ──────────────────
 app.patch("/orders/:id/advance", requireAdmin, async (req, res) => {
