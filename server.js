@@ -190,6 +190,16 @@ app.post("/orders", requireAdmin, async (req, res) => {
   res.status(201).json(data);
 });
 
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  if (email === "admin@cindymary.com" && password === "password") {
+    return res.json({ success: true, message: "Login successful" });
+  }
+
+  return res.status(401).json({ error: "Invalid login" });
+});
+
 // ── PATCH /orders/:id/advance  (admin only) ──────────────────
 app.patch("/orders/:id/advance", requireAdmin, async (req, res) => {
   const { data: order, error: fetchErr } = await supabase
