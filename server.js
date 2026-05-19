@@ -290,9 +290,15 @@ app.patch("/orders/:id/delay", requireAdmin, async (req, res) => {
   const { data: order } = await supabase.from("orders").select("*").eq("id", req.params.id).single();
   if (!order) return res.status(404).json({ error: "Order not found" });
 
-  await supabase.from("delays").insert({
-    order_id: order.id, stage_id, days, reason, added_by: req.user.id,
-  });
+  const { error } = await supabase.from("delays").insert({
+  order_id: order.id,
+  stage_id,
+  days: Number(days),
+  reason,
+  added_by: req.user.id,
+});
+
+if (error) return res.status(500).json({ error: error.message });
 
   res.json({ success: true, message: `Delay of ${days} day(s) added to stage ${stage_id}` });
 });
