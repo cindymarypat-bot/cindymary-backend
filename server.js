@@ -294,8 +294,8 @@ app.patch("/orders/:id/delay", requireAdmin, async (req, res) => {
   order_id: order.id,
   stage_id,
   days: Number(days),
-  reason,
-  added_by: req.user.id,
+  reason
+  
 });
 
 if (error) return res.status(500).json({ error: error.message });
