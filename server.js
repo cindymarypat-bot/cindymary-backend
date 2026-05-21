@@ -183,6 +183,25 @@ app.post("/auth/login", async (req, res) => {
     });
   }
 
+  const { data: order, error } = await supabase
+    .from("orders")
+    .select("*")
+    .eq("client_email", email)
+    .eq("client_password", password)
+    .single();
+
+  if (order) {
+    return res.json({
+      token: "client-test-token",
+      user: {
+        email: order.client_email,
+        role: "client",
+        name: order.client_name,
+        orderId: order.id
+      }
+    });
+  }
+
   return res.status(401).json({ error: "Invalid login" });
 });
 
