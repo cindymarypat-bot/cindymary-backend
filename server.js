@@ -133,7 +133,7 @@ app.get("/health", (_, res) => res.json({ status: "ok", service: "Cindymary Cout
 app.get("/stages", (_, res) => res.json(STAGES));
 
 // ── GET /orders  (admin: all | client: own) ──────────────────
-app.get("/orders/:id", requireAuth, async (req, res) => {
+app.get("/orders", requireAuth, async (req, res) => {
   let isAdmin = req.user?.role === "admin";
 
 if (!isAdmin && req.user?.id) {
