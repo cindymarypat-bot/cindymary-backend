@@ -210,6 +210,7 @@ app.post("/orders", requireAdmin, async (req, res) => {
   const {
   client_name,
   client_email,
+  client_password,
   client_phone,
   garment,
   location,
@@ -222,7 +223,7 @@ app.post("/orders", requireAdmin, async (req, res) => {
   style_reference_notes
 } = req.body;
 
-  if (!client_name || !client_email || !garment || !location) {
+  if (!client_name || !client_email || !client_password || !garment || !location) {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
@@ -231,7 +232,7 @@ app.post("/orders", requireAdmin, async (req, res) => {
   const id = generateOrderId(count || 0);
 
   const { data, error } = await supabase.from("orders").insert({
-    id, client_name, client_email, client_phone,
+    id, client_name, client_email, client_password, client_phone,
     garment, location, notes,
     assigned_to: assigned_to || "Unassigned",
     current_stage: 1,
