@@ -56,6 +56,17 @@ async function requireAuth(req, res, next) {
     return next();
   }
 
+  if (token.startsWith("client-test-token:")) {
+    const orderId = token.replace("client-test-token:", "");
+
+    req.user = {
+      id: orderId,
+      role: "client",
+      orderId
+    };
+    return next();
+  }
+
   return res.status(401).json({ error: "Invalid token" });
 }
 
@@ -122,7 +133,7 @@ app.get("/health", (_, res) => res.json({ status: "ok", service: "Cindymary Cout
 app.get("/stages", (_, res) => res.json(STAGES));
 
 // ── GET /orders  (admin: all | client: own) ──────────────────
-app.get("/orders", requireAuth, async (req, res) => {
+app.get("/orders/:id", requireAuth, async (req, res) => {
   let isAdmin = req.user?.role === "admin";
 
 if (!isAdmin && req.user?.id) {
@@ -192,7 +203,7 @@ app.post("/auth/login", async (req, res) => {
 
   if (order) {
     return res.json({
-      token: "client-test-token",
+      token: `client-test-token:${order.id}`,
       user: {
         email: order.client_email,
         role: "client",
