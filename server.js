@@ -183,7 +183,7 @@ app.get("/orders/:id", requireAuth, async (req, res) => {
 app.post("/auth/login", async (req, res) => {
   const { email, password } = req.body;
 
-  if (email === "admin@cindymary.com" && password === "password") {
+  if (email === "admin@cindymary.com" && password === "ChiOlu1206!") {
     return res.json({
       token: "admin-test-token",
       user: {
