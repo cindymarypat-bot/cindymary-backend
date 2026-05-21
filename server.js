@@ -57,15 +57,23 @@ async function requireAuth(req, res, next) {
   }
 
   if (token.startsWith("client-test-token:")) {
-    const orderId = token.replace("client-test-token:", "");
+  const orderId = token.replace("client-test-token:", "");
 
-    req.user = {
-      id: orderId,
-      role: "client",
-      orderId
-    };
-    return next();
-  }
+  const { data: order } = await supabase
+    .from("orders")
+    .select("client_email")
+    .eq("id", orderId)
+    .single();
+
+  req.user = {
+    id: orderId,
+    email: order?.client_email,
+    role: "client",
+    orderId
+  };
+
+  return next();
+}
 
   return res.status(401).json({ error: "Invalid token" });
 }
@@ -194,23 +202,22 @@ app.post("/auth/login", async (req, res) => {
     });
   }
 
-  const { data: order, error } = await supabase
-    .from("orders")
-    .select("*")
-    .eq("client_email", email)
-    .eq("client_password", password)
-    .single();
+  const { data: orders, error } = await supabase
+  .from("orders")
+  .select("*")
+  .eq("client_email", email)
+  .eq("client_password", password);
 
-  if (order) {
+  if (orders && orders.length > 0) {
     return res.json({
-      token: `client-test-token:${order.id}`,
-      user: {
-        email: order.client_email,
-        role: "client",
-        name: order.client_name,
-        orderId: order.id
-      }
-    });
+  token: `client-test-token:${orders[0].id}`,
+  user: {
+    email: orders[0].client_email,
+    role: "client",
+    name: orders[0].client_name,
+    orderId: orders[0].id
+  }
+});
   }
 
   return res.status(401).json({ error: "Invalid login" });
